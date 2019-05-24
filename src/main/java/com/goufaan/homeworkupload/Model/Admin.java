@@ -1,6 +1,5 @@
 package com.goufaan.homeworkupload.Model;
 
-import org.apache.catalina.User;
 import org.springframework.util.DigestUtils;
 
 public class Admin {

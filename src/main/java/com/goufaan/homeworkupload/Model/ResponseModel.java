@@ -1,9 +1,5 @@
 package com.goufaan.homeworkupload.Model;
 
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +9,8 @@ public class ResponseModel {
         put(1000, "参数不全");
         put(2000, "账户不存在或密码错误");
         put(2001, "用户已存在");
+        put(3000, "作业不存在或被删除");
+        put(3001, "作业提交时间已过");
     }};
 
     int ret;

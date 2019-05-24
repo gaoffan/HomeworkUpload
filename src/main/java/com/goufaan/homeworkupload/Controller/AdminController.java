@@ -1,5 +1,6 @@
 package com.goufaan.homeworkupload.Controller;
 
+import com.goufaan.homeworkupload.Model.Admin;
 import com.goufaan.homeworkupload.Model.ResponseModel;
 import com.goufaan.homeworkupload.Repository.IAuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,19 @@ public class AdminController {
 
     @RequestMapping("/register")
     public String Register(){
-        return "";
+        auth.Register("123456","123456","123@abc.com");
+        return "ok!";
     }
 
     @RequestMapping("/signin")
     public ResponseModel SignIn(String userName, String password, HttpServletRequest request){
+        if (userName == null || password == null)
+            return new ResponseModel(1000);
+
         var result = auth.Login(userName, password);
         if (result == null)
             return new ResponseModel(2000);
+
         var s = request.getSession();
         s.setAttribute("OPENID", result);
         s.setMaxInactiveInterval(30 * 60);
@@ -35,4 +41,10 @@ public class AdminController {
         request.getSession().removeAttribute("OPENID");
         return new ResponseModel("成功退出登录");
     }
+
+    @RequestMapping("/me")
+    public Admin Me(HttpServletRequest request){
+        return auth.GetUser((String)request.getSession().getAttribute("OPENID"));
+    }
+
 }

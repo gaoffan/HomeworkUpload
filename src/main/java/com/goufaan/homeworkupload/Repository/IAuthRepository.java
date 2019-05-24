@@ -6,6 +6,8 @@ public interface IAuthRepository {
 
     Admin GetUser(int uid);
 
+    Admin GetUser(String OPENID);
+
     String Login(String userName, String password);
 
     int Register(String userName, String password, String email);

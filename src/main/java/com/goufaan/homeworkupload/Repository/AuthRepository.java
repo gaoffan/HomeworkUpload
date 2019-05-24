@@ -8,10 +8,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
-import java.util.Date;
-
 @Component
 public class AuthRepository implements IAuthRepository {
+
     @Autowired
     private MongoTemplate mongo;
 
@@ -23,11 +22,18 @@ public class AuthRepository implements IAuthRepository {
     }
 
     @Override
+    public Admin GetUser(String OPENID) {
+        var q = new Query(Criteria.where("OPENID").is(OPENID));
+        var result = mongo.findOne(q, Admin.class);
+        return result;
+    }
+
+    @Override
     public String Login(String userName, String password) {
         var q = new Query(Criteria.where("UserName").is(userName));
         var result = mongo.findOne(q, Admin.class);
         var pwd = password + Admin.SALT;
-        if (result == null || result.getPassword() != DigestUtils.md5DigestAsHex(pwd.getBytes()))
+        if (result == null || !result.getPassword().equals(DigestUtils.md5DigestAsHex(pwd.getBytes())))
             return null;
         return result.getOPENID();
     }
