@@ -1,7 +1,10 @@
 package com.goufaan.homeworkupload.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.DigestUtils;
+
+import java.util.Date;
 
 public class Admin {
     public static final String SALT = "iahsdtgbfaskLjgfhbanersdkjfaberfhqerhjkagblv";
@@ -10,6 +13,8 @@ public class Admin {
     String UserName;
     String Password;
     String Email;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    Date CreateDate;
     String OPENID;
 
     public int getUid(){
@@ -42,6 +47,13 @@ public class Admin {
     }
     public void setEmail(String n){
         Email = n;
+    }
+
+    public Date getCreateDate(){
+        return CreateDate;
+    }
+    public void setCreateDate(Date d){
+        CreateDate = d;
     }
 
     @JsonIgnore

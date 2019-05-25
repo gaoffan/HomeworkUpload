@@ -8,6 +8,8 @@ public interface IAuthRepository {
 
     Admin GetLoginAs(HttpServletRequest request);
 
+    boolean isLogin(HttpServletRequest request);
+
     Admin GetUser(int uid);
 
     Admin GetUser(String OPENID);
