@@ -17,6 +17,7 @@ public class HomeworkRepository implements IHomeworkRepository {
 
     @Override
     public List<Homework> GetAllHomework() {
+        //var q = new Query(Criteria.where("id").not(id));
         return mongo.findAll(Homework.class);
     }
 
