@@ -7,8 +7,11 @@ public class ResponseModel {
     public static final Map<Integer,String> ERROR = new HashMap<>(){{
         put(500, "服务器内部错误");
         put(1000, "参数不全");
+
+        put(1999, "请先登录");
         put(2000, "账户不存在或密码错误");
         put(2001, "用户已存在");
+
         put(3000, "作业不存在或被删除");
         put(3001, "作业提交时间已过");
     }};

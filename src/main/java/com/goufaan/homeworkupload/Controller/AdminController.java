@@ -42,9 +42,9 @@ public class AdminController {
         return new ResponseModel("成功退出登录");
     }
 
-    @RequestMapping("/me")
+    @RequestMapping("/api/auth/me")
     public Admin Me(HttpServletRequest request){
-        return auth.GetUser((String)request.getSession().getAttribute("OPENID"));
+        return auth.GetLoginAs(request);
     }
 
 }

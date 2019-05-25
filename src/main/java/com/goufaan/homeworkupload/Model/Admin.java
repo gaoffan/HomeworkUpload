@@ -1,5 +1,6 @@
 package com.goufaan.homeworkupload.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.util.DigestUtils;
 
 public class Admin {
@@ -26,6 +27,7 @@ public class Admin {
         UpdateOPENID();
     }
 
+    @JsonIgnore
     public String getPassword(){
         return Password;
     }
@@ -42,6 +44,7 @@ public class Admin {
         Email = n;
     }
 
+    @JsonIgnore
     public String getOPENID(){
         return OPENID;
     }

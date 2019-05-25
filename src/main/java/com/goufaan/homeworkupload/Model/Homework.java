@@ -13,7 +13,7 @@ public class Homework implements Serializable {
     String Name;
 
     @NotEmpty
-    String Owner;
+    int Owner;
 
     String[] SupportType;
 
@@ -42,11 +42,11 @@ public class Homework implements Serializable {
         Name = n;
     }
 
-    public String getOwner(){
+    public int getOwner(){
         return Owner;
     }
-    public void setOwner(String n){
-        Owner = n;
+    public void setOwner(int o){
+        Owner = o;
     }
 
     public String[] getSupportType(){

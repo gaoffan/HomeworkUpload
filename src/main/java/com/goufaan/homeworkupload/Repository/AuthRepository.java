@@ -8,11 +8,18 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Component
 public class AuthRepository implements IAuthRepository {
 
     @Autowired
     private MongoTemplate mongo;
+
+    @Override
+    public Admin GetLoginAs(HttpServletRequest request) {
+        return GetUser((String)request.getSession().getAttribute("OPENID"));
+    }
 
     @Override
     public Admin GetUser(int uid) {
@@ -23,6 +30,8 @@ public class AuthRepository implements IAuthRepository {
 
     @Override
     public Admin GetUser(String OPENID) {
+        if (OPENID == null)
+            return null;
         var q = new Query(Criteria.where("OPENID").is(OPENID));
         var result = mongo.findOne(q, Admin.class);
         return result;
