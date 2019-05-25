@@ -15,13 +15,13 @@ public class AdminController {
     @Autowired
     IAuthRepository auth;
 
-    @RequestMapping("/register")
+    @RequestMapping("/api/register")
     public String Register(){
         auth.Register("123456","123456","123@abc.com");
         return "ok!";
     }
 
-    @RequestMapping("/signin")
+    @RequestMapping("/api/signin")
     public ResponseModel SignIn(String userName, String password, HttpServletRequest request){
         if (userName == null || password == null)
             return new ResponseModel(1000);
@@ -36,7 +36,7 @@ public class AdminController {
         return new ResponseModel("登录成功");
     }
 
-    @RequestMapping("/signout")
+    @RequestMapping("/api/signout")
     public ResponseModel SignOut(HttpServletRequest request){
         request.getSession().removeAttribute("OPENID");
         return new ResponseModel("成功退出登录");

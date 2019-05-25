@@ -2,9 +2,15 @@ package com.goufaan.homeworkupload.Controller;
 
 import com.goufaan.homeworkupload.Model.ResponseModel;
 import com.goufaan.homeworkupload.Model.Submission;
+import com.goufaan.homeworkupload.Repository.IAuthRepository;
 import com.goufaan.homeworkupload.Repository.IHomeworkRepository;
 import com.goufaan.homeworkupload.Repository.ISubmissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,12 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @RestController
 public class SubmitController {
@@ -28,6 +36,9 @@ public class SubmitController {
 
     @Autowired
     IHomeworkRepository homew;
+
+    @Autowired
+    IAuthRepository auth;
 
     @RequestMapping("/api/submit")
     public ResponseModel SubmitFile(Integer hid, String user, String password, @RequestParam("file") MultipartFile file, HttpServletRequest request){
@@ -60,7 +71,8 @@ public class SubmitController {
 
         Path path;
         try{
-            path = Files.createDirectories(Paths.get(PATH + h.getId()+ "/").toAbsolutePath().normalize()).resolve(fileName);
+            path = Files.createDirectories(Paths.get(PATH + h.getId()+ "/").toAbsolutePath().normalize())
+                    .resolve(user + "." + ext);
             file.transferTo(path);
 
         }catch (Exception e){
@@ -83,7 +95,58 @@ public class SubmitController {
     }
 
     @RequestMapping("/api/auth/download")
-    public ResponseModel DownloadSubmission(){
-        return new ResponseModel(200);
+    public ResponseEntity<Resource> DownloadSubmission(Integer hid, HttpServletRequest request){
+        if (hid == null)
+            return null;
+        if (homew.GetHomework(hid).getOwner() != auth.GetLoginAs(request).getUid())
+            return null;
+        if (sub.GetNowSubmittedCount(hid) == 0)
+            return null;
+
+        String sourcePath = Paths.get("./uploads/" + hid + "/").toAbsolutePath().normalize().toString();
+        String zipFileName = Paths.get("./tmp/" + hid + ".zip").toAbsolutePath().normalize().toString();
+        try {
+            ZipMultiFile(sourcePath, zipFileName);
+            Resource resource = new UrlResource(Paths.get("./tmp/" + hid + ".zip").toAbsolutePath().toUri());
+            String contentType = null;
+
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+
+            if(contentType == null)
+                contentType = "application/octet-stream";
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void ZipMultiFile(String filepath ,String zippath) {
+        try {
+            File file = new File(filepath);
+            File zipFile = new File(zippath);
+            InputStream input = null;
+            ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile));
+            if(file.isDirectory()){
+                File[] files = file.listFiles();
+                for(int i = 0; i < files.length; ++i){
+                    input = new FileInputStream(files[i]);
+                    zipOut.putNextEntry(new ZipEntry(file.getName() + File.separator + files[i].getName()));
+                    int temp = 0;
+                    while((temp = input.read()) != -1){
+                        zipOut.write(temp);
+                    }
+                    input.close();
+                }
+            }
+            zipOut.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

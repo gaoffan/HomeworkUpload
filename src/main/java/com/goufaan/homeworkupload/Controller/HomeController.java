@@ -25,7 +25,7 @@ public class HomeController {
     @Autowired
     IHomeworkRepository homew;
 
-    @RequestMapping("/getlist")
+    @RequestMapping("/api/getlist")
     public ResponseModel GetHomeworkList() {
         var r = new ResponseModel(200);
         var result = homew.GetAllHomework();
@@ -33,7 +33,7 @@ public class HomeController {
         return r;
     }
 
-    @RequestMapping("/get/{id}")
+    @RequestMapping("/api/get/{id}")
     public ResponseModel GetHomework(@PathVariable Integer id) {
         if (id == null)
             return new ResponseModel(1000);
