@@ -2,11 +2,13 @@ package com.goufaan.homeworkupload.Repository;
 
 import com.goufaan.homeworkupload.Model.Homework;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import java.util.Calendar;
 import java.util.List;
 
 @Component
@@ -17,15 +19,24 @@ public class HomeworkRepository implements IHomeworkRepository {
 
     @Override
     public List<Homework> GetAllHomework() {
-        //var q = new Query(Criteria.where("id").not(id));
-        return mongo.findAll(Homework.class);
+        var d = Calendar.getInstance();
+        d.set(d.get(Calendar.YEAR), d.get(Calendar.MONTH), d.get(Calendar.DAY_OF_MONTH) - 7);
+        var q = new Query(Criteria.where("Deadline").gte(d.getTime()));
+        q.with(new Sort(Sort.Direction.DESC, "id"));
+        return mongo.find(q, Homework.class);
+    }
+
+    @Override
+    public List<Homework> GetMyAllHomework(int uid) {
+        var q = new Query(Criteria.where("Owner").is(uid));
+        q.with(new Sort(Sort.Direction.DESC, "id"));
+        return mongo.find(q , Homework.class);
     }
 
     @Override
     public Homework GetHomework(int id) {
         var q = new Query(Criteria.where("id").is(id));
-        var result =  mongo.findOne(q , Homework.class);
-        return result;
+        return mongo.findOne(q , Homework.class);
     }
 
     @Override

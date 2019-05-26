@@ -8,6 +8,8 @@ public interface IHomeworkRepository {
 
     List<Homework> GetAllHomework();
 
+    List<Homework> GetMyAllHomework(int uid);
+
     Homework GetHomework(int id);
 
     int AddHomework(Homework h);
