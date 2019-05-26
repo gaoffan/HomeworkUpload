@@ -23,12 +23,12 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
-        httpServletResponse.addHeader("Access-Control-Allow-Credentials","true");
-        httpServletResponse.addHeader("Access-Control-Allow-Origin","http://127.0.0.1:8081");
         if(auth.isLogin(httpServletRequest)){
             return true;
         }
         else{
+            httpServletResponse.addHeader("Access-Control-Allow-Credentials","true");
+            httpServletResponse.addHeader("Access-Control-Allow-Origin","http://127.0.0.1:8081");
             PrintWriter printWriter = httpServletResponse.getWriter();
             printWriter.write("{\"ret\":1999,\"desc\":\"Not signed in\",\"data\":null}");
             return false;
