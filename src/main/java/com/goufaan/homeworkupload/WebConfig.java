@@ -18,7 +18,7 @@ public class WebConfig extends WebMvcConfigurationSupport {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authInterceptor).addPathPatterns("/api/auth/**");
         registry.addInterceptor(corsInterceptor);
+        registry.addInterceptor(authInterceptor).addPathPatterns("/api/auth/**");
     }
 }

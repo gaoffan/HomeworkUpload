@@ -16,8 +16,8 @@ public class AdminController {
     IAuthRepository auth;
 
     @RequestMapping("/api/register")
-    public String Register(){
-        auth.Register("123456","123456","123@abc.com");
+    public String Register(String n,String p){
+        auth.Register(n,p,"123@abc.com");
         return "ok!";
     }
 

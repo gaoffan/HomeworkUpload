@@ -10,7 +10,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.PrintWriter;
 
 @Component
@@ -27,8 +26,6 @@ public class AuthInterceptor implements HandlerInterceptor {
             return true;
         }
         else{
-            httpServletResponse.addHeader("Access-Control-Allow-Credentials","true");
-            httpServletResponse.addHeader("Access-Control-Allow-Origin","http://127.0.0.1:8081");
             PrintWriter printWriter = httpServletResponse.getWriter();
             printWriter.write("{\"ret\":1999,\"desc\":\"Not signed in\",\"data\":null}");
             return false;

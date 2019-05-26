@@ -107,12 +107,14 @@ public class SubmitController {
         if (sub.GetAllSubmission(hid).size() == 0)
             return null;
 
-        String sourcePath = Paths.get("./uploads/" + hid + "/").toAbsolutePath().normalize().toString();
-        String zipFileName = Paths.get("./tmp/" + hid + ".zip").toAbsolutePath().normalize().toString();
+        var sourcePath = Paths.get("./uploads/" + hid + "/").toAbsolutePath().normalize();
+        var zipFile = Paths.get("./tmp/" + hid + ".zip").toAbsolutePath().normalize();
+
         try {
-            ZipMultiFile(sourcePath, zipFileName);
-            Resource resource = new UrlResource(Paths.get("./tmp/" + hid + ".zip").toAbsolutePath().toUri());
-            String contentType = null;
+            Files.createDirectories(zipFile);
+            ZipMultiFile(sourcePath.toString(), zipFile.toString());
+            Resource resource = new UrlResource(Paths.get("./tmp/" + hid + ".zip").toAbsolutePath().normalize().toUri());
+            String contentType;
 
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
 

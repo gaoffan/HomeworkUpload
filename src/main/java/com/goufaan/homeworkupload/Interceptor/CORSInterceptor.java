@@ -6,7 +6,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
+
+import static com.goufaan.homeworkupload.HomeworkUploadApplication.FrontUrl;
 
 @Component
 public class CORSInterceptor implements HandlerInterceptor {
@@ -14,7 +15,7 @@ public class CORSInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
         httpServletResponse.addHeader("Access-Control-Allow-Credentials","true");
-        httpServletResponse.addHeader("Access-Control-Allow-Origin","http://127.0.0.1:8081");
+        httpServletResponse.addHeader("Access-Control-Allow-Origin",FrontUrl);
         return true;
     }
 
