@@ -66,7 +66,7 @@ public class SubmitController {
         if (lastsub != null && !lastsub.getPassword().equals(password))
             return new ResponseModel(3004);
 
-        if (lastsub == null && sub.GetNowSubmittedCount(hid) >= h.getSubmissionLimit())
+        if (lastsub == null && sub.GetAllSubmission(hid).size() >= h.getSubmissionLimit())
             return new ResponseModel(3005);
 
         Path path;
@@ -93,14 +93,18 @@ public class SubmitController {
             return new ResponseModel(sub.UpdateSubmission(user, hid, request.getRemoteAddr()), "重新提交成功！");
         }
     }
+    @RequestMapping("/api/downloadsubmission")
+    public ResponseEntity<Resource> DownloadSubmission(Integer hid, String user, String password, HttpServletRequest request) {
+        return null; // TODO
+    }
 
     @RequestMapping("/api/auth/download")
-    public ResponseEntity<Resource> DownloadSubmission(Integer hid, HttpServletRequest request){
+    public ResponseEntity<Resource> DownloadAllSubmission(Integer hid, HttpServletRequest request){
         if (hid == null)
             return null;
         if (homew.GetHomework(hid).getOwner() != auth.GetLoginAs(request).getUid())
             return null;
-        if (sub.GetNowSubmittedCount(hid) == 0)
+        if (sub.GetAllSubmission(hid).size() == 0)
             return null;
 
         String sourcePath = Paths.get("./uploads/" + hid + "/").toAbsolutePath().normalize().toString();

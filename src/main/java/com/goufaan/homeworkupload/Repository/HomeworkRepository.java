@@ -62,4 +62,16 @@ public class HomeworkRepository implements IHomeworkRepository {
         }
         return 200;
     }
+
+    @Override
+    public boolean IsMyHomework(int id, int uid) {
+        try {
+            var q = new Query(Criteria.where("id").is(id));
+            var result = mongo.findOne(q, Homework.class);
+            return result != null && result.getOwner() == uid;
+        }
+        catch(Exception e){
+            return false;
+        }
+    }
 }

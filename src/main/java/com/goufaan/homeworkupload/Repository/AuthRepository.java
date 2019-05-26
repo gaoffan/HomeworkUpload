@@ -30,7 +30,7 @@ public class AuthRepository implements IAuthRepository {
 
     @Override
     public Admin GetUser(int uid) {
-        var q = new Query(Criteria.where("id").is(uid));
+        var q = new Query(Criteria.where("uid").is(uid));
         var result = mongo.findOne(q, Admin.class);
         return result;
     }

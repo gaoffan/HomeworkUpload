@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class SubmissionRepository implements ISubmissionRepository {
@@ -40,8 +41,9 @@ public class SubmissionRepository implements ISubmissionRepository {
     }
 
     @Override
-    public int GetNowSubmittedCount(int hid) {
+    public List<Submission> GetAllSubmission(int hid) {
         var q = new Query(Criteria.where("HomeworkId").is(hid));
-        return mongo.find(q, Submission.class).size();
+        return mongo.find(q, Submission.class);
     }
+
 }

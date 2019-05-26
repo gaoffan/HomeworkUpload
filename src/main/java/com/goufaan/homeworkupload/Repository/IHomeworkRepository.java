@@ -15,4 +15,6 @@ public interface IHomeworkRepository {
     int EditHomework(Homework h);
 
     int RemoveHomework(int id);
+
+    boolean IsMyHomework(int id, int uid);
 }

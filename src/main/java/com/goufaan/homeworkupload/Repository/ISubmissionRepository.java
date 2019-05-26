@@ -2,6 +2,8 @@ package com.goufaan.homeworkupload.Repository;
 
 import com.goufaan.homeworkupload.Model.Submission;
 
+import java.util.List;
+
 public interface ISubmissionRepository {
 
     int AddSubmission(Submission s);
@@ -10,5 +12,5 @@ public interface ISubmissionRepository {
 
     Submission GetLastSubmission(String user, int hid);
 
-    int GetNowSubmittedCount(int hid);
+    List<Submission> GetAllSubmission(int hid);
 }
