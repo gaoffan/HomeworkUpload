@@ -1,13 +1,15 @@
 package com.goufaan.homeworkupload.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.DigestUtils;
 
 import java.util.Date;
 
 public class Admin {
-    public static final String SALT = "iahsdtgbfaskLjgfhbanersdkjfaberfhqerhjkagblv";
+    @Value("${homeworkupload.auth.salt}")
+    private String salt;
 
     int uid;
     String UserName;
@@ -37,7 +39,7 @@ public class Admin {
         return Password;
     }
     public void setPassword(String n){
-        n = n + SALT;
+        n = n + salt;
         Password = DigestUtils.md5DigestAsHex(n.getBytes());
         UpdateOPENID();
     }

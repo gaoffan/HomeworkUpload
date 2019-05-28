@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @RestController
-public class HomeController {
+public class HomeworkController {
 
     @Autowired
     IAuthRepository auth;
@@ -80,6 +80,7 @@ public class HomeController {
         map.put("format",result.getSupportType());
         var subs = sub.GetAllSubmission(id);
         map.put("count", subs.size());
+        map.put("fnExample",result.getFileNameExample());
         var p = new ArrayList<HashMap<String,Object>>();
         for (var item : subs){
             var hm = new HashMap<String,Object>();

@@ -2,6 +2,7 @@ package com.goufaan.homeworkupload.Repository;
 
 import com.goufaan.homeworkupload.Model.Admin;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -12,6 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 
 @Component
 public class AuthRepository implements IAuthRepository {
+
+    @Value("${homeworkupload.auth.salt}")
+    private String salt;
 
     @Autowired
     private MongoTemplate mongo;
@@ -48,7 +52,7 @@ public class AuthRepository implements IAuthRepository {
     public String Login(String userName, String password) {
         var q = new Query(Criteria.where("UserName").is(userName));
         var result = mongo.findOne(q, Admin.class);
-        var pwd = password + Admin.SALT;
+        var pwd = password + salt;
         if (result == null || !result.getPassword().equals(DigestUtils.md5DigestAsHex(pwd.getBytes())))
             return null;
         return result.getOPENID();
