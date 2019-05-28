@@ -1,5 +1,6 @@
 package com.goufaan.homeworkupload.Controller;
 
+import com.goufaan.homeworkupload.Misc;
 import com.goufaan.homeworkupload.Model.ResponseModel;
 import com.goufaan.homeworkupload.Model.Submission;
 import com.goufaan.homeworkupload.Repository.IAuthRepository;
@@ -40,6 +41,16 @@ public class SubmitController {
     @Autowired
     IAuthRepository auth;
 
+    @RequestMapping("/api/getsubmitted")
+    public ResponseModel GetIsSubmitted(Integer hid, String user){
+        if (hid == null || user == null)
+            return new ResponseModel(1000);
+        var result = sub.GetLastSubmission(hid, user);
+        var r = new ResponseModel(200);
+        r.setData(result != null);
+        return r;
+    }
+
     @RequestMapping("/api/submit")
     public ResponseModel SubmitFile(Integer hid, String user, String password, @RequestParam("file") MultipartFile file, HttpServletRequest request){
         if (hid == null || user == null || password == null || file == null || file.isEmpty())
@@ -62,7 +73,7 @@ public class SubmitController {
         if (file.getSize() > 10 * 1024 * 1024)
             return new ResponseModel(3003);
 
-        var lastsub = sub.GetLastSubmission(user, hid);
+        var lastsub = sub.GetLastSubmission(hid, user);
         if (lastsub != null && !lastsub.getPassword().equals(password))
             return new ResponseModel(3004);
 
@@ -93,12 +104,47 @@ public class SubmitController {
             return new ResponseModel(sub.UpdateSubmission(user, hid, request.getRemoteAddr()), "重新提交成功！");
         }
     }
-    @RequestMapping("/api/downloadsubmission")
-    public ResponseEntity<Resource> DownloadSubmission(Integer hid, String user, String password, HttpServletRequest request) {
-        return null; // TODO
+
+    @RequestMapping("/api/candownloadsubmission")
+    public ResponseModel CanDownloadSubmission(Integer hid, String user, String password) {
+        if (hid == null || user == null || password == null)
+            return new ResponseModel(1000);
+        var lastSub = sub.GetLastSubmission(hid, user);
+        if (lastSub == null)
+            return new ResponseModel(4001);
+        if (!sub.IsMySubmission(lastSub, password))
+            return new ResponseModel(4002);
+        return new ResponseModel(200);
     }
 
-    @RequestMapping("/api/auth/download")
+    public ResponseEntity<Resource> DownloadFile(Path path, HttpServletRequest request)
+    {
+        try {
+            Resource resource = new UrlResource(path.toUri());
+            String contentType;
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+            if(contentType == null)
+                contentType = "application/octet-stream";
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    @RequestMapping("/api/downloadsubmission")
+    public ResponseEntity<Resource> DownloadSubmission(Integer hid, String user, String password, HttpServletRequest request) {
+        if (CanDownloadSubmission(hid, user, password).getRet() != 200)
+            return null;
+        var lastSub = sub.GetLastSubmission(hid, user);
+        var source = Paths.get(lastSub.getFilePath());
+        return DownloadFile(source, request);
+    }
+
+    @RequestMapping("/api/auth/downloadall")
     public ResponseEntity<Resource> DownloadAllSubmission(Integer hid, HttpServletRequest request){
         if (hid == null)
             return null;
@@ -112,47 +158,13 @@ public class SubmitController {
 
         try {
             Files.createDirectories(zipFile);
-            ZipMultiFile(sourcePath.toString(), zipFile.toString());
-            Resource resource = new UrlResource(Paths.get("./tmp/" + hid + ".zip").toAbsolutePath().normalize().toUri());
-            String contentType;
+            Misc.ZipMultiFile(sourcePath.toString(), zipFile.toString());
 
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-
-            if(contentType == null)
-                contentType = "application/octet-stream";
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                    .body(resource);
+            return DownloadFile(Paths.get("./tmp/" + hid + ".zip").toAbsolutePath().normalize(), request);
 
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        }
-    }
-
-    public static void ZipMultiFile(String filepath ,String zippath) {
-        try {
-            File file = new File(filepath);
-            File zipFile = new File(zippath);
-            InputStream input = null;
-            ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile));
-            if(file.isDirectory()){
-                File[] files = file.listFiles();
-                for(int i = 0; i < files.length; ++i){
-                    input = new FileInputStream(files[i]);
-                    zipOut.putNextEntry(new ZipEntry(file.getName() + File.separator + files[i].getName()));
-                    int temp = 0;
-                    while((temp = input.read()) != -1){
-                        zipOut.write(temp);
-                    }
-                    input.close();
-                }
-            }
-            zipOut.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }
