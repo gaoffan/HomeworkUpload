@@ -61,7 +61,7 @@ public class HomeworkController {
     }
 
     @RequestMapping("/api/get/{id}")
-    public ResponseModel GetHomework(@PathVariable Integer id) {
+    public ResponseModel GetHomework(@PathVariable Integer id, HttpServletRequest request) {
         if (id == null)
             return new ResponseModel(1000);
         var result = homew.GetHomework(id);
@@ -81,14 +81,16 @@ public class HomeworkController {
         var subs = sub.GetAllSubmission(id);
         map.put("count", subs.size());
         map.put("fnExample",result.getFileNameExample());
-        var p = new ArrayList<HashMap<String,Object>>();
-        for (var item : subs){
-            var hm = new HashMap<String,Object>();
-            hm.put("name", item.getUser());
-            hm.put("time", item.getCreateDate());
-            p.add(hm);
+        if ((boolean)IsMyHomework(id, request).getData() == true){
+            var p = new ArrayList<HashMap<String,Object>>();
+            for (var item : subs){
+                var hm = new HashMap<String,Object>();
+                hm.put("name", item.getUser());
+                hm.put("time", item.getCreateDate());
+                p.add(hm);
+            }
+            map.put("submitted", p);
         }
-        map.put("submitted", p);
         r.setData(map);
         return r;
     }
@@ -121,7 +123,11 @@ public class HomeworkController {
         if (hid == null)
             return new ResponseModel(1000);
         var result = new ResponseModel(200);
-        result.setData(homew.IsMyHomework(hid, auth.GetLoginAs(request).getUid()));
+        var admin = auth.GetLoginAs(request);
+        if (admin == null)
+            result.setData(false);
+        else
+            result.setData(homew.IsMyHomework(hid, admin.getUid()));
         return result;
     }
 

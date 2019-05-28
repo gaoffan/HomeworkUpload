@@ -73,11 +73,11 @@ public class SubmitController {
         if (file.getSize() > 10 * 1024 * 1024)
             return new ResponseModel(3003);
 
-        var lastsub = sub.GetLastSubmission(hid, user);
-        if (lastsub != null && !lastsub.getPassword().equals(password))
+        var lastSub = sub.GetLastSubmission(hid, user);
+        if (lastSub != null && !lastSub.getPassword().equals(password))
             return new ResponseModel(3004);
 
-        if (lastsub == null && sub.GetAllSubmission(hid).size() >= h.getSubmissionLimit())
+        if (lastSub == null && sub.GetAllSubmission(hid).size() >= h.getSubmissionLimit())
             return new ResponseModel(3005);
 
         Path path;
@@ -87,10 +87,11 @@ public class SubmitController {
             file.transferTo(path);
 
         }catch (Exception e){
+            e.printStackTrace();
             return new ResponseModel(500);
         }
 
-        if (lastsub == null){
+        if (lastSub == null){
             var s = new Submission();
             s.setHomeworkId(hid);
             s.setUser(user);
@@ -157,7 +158,7 @@ public class SubmitController {
         var zipFile = Paths.get("./tmp/" + hid + ".zip").toAbsolutePath().normalize();
 
         try {
-            Files.createDirectories(zipFile);
+            Files.createDirectories(Paths.get("./tmp/").toAbsolutePath().normalize());
             Misc.ZipMultiFile(sourcePath.toString(), zipFile.toString());
 
             return DownloadFile(Paths.get("./tmp/" + hid + ".zip").toAbsolutePath().normalize(), request);

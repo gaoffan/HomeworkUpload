@@ -42,10 +42,11 @@ public class HomeworkRepository implements IHomeworkRepository {
     @Override
     public int AddHomework(Homework h) {
         try {
-            h.setId(mongo.findAll(Homework.class).size());
+            h.setId(mongo.findAll(Homework.class).size() + 1);
             mongo.insert(h);
         }
         catch(Exception e){
+            e.printStackTrace();
             return 500;
         }
         return 200;
@@ -57,6 +58,7 @@ public class HomeworkRepository implements IHomeworkRepository {
             mongo.save(h);
         }
         catch(Exception e){
+            e.printStackTrace();
             return 500;
         }
         return 200;
@@ -69,6 +71,7 @@ public class HomeworkRepository implements IHomeworkRepository {
             mongo.remove(q, Homework.class);
         }
         catch(Exception e){
+            e.printStackTrace();
             return 500;
         }
         return 200;
@@ -82,6 +85,7 @@ public class HomeworkRepository implements IHomeworkRepository {
             return result != null && result.getOwner() == uid;
         }
         catch(Exception e){
+            e.printStackTrace();
             return false;
         }
     }

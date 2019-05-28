@@ -35,8 +35,7 @@ public class AuthRepository implements IAuthRepository {
     @Override
     public Admin GetUser(int uid) {
         var q = new Query(Criteria.where("uid").is(uid));
-        var result = mongo.findOne(q, Admin.class);
-        return result;
+        return mongo.findOne(q, Admin.class);
     }
 
     @Override
@@ -44,8 +43,7 @@ public class AuthRepository implements IAuthRepository {
         if (OPENID == null)
             return null;
         var q = new Query(Criteria.where("OPENID").is(OPENID));
-        var result = mongo.findOne(q, Admin.class);
-        return result;
+        return mongo.findOne(q, Admin.class);
     }
 
     @Override
@@ -66,13 +64,14 @@ public class AuthRepository implements IAuthRepository {
             return 2001;
         var n = new Admin();
         try {
-            n.setUid(mongo.findAll(Admin.class).size());
+            n.setUid(mongo.findAll(Admin.class).size() + 1);
             n.setUserName(userName);
             n.setEmail(email);
             n.setPassword(password);
             mongo.insert(n);
         }
         catch(Exception e){
+            e.printStackTrace();
             return 500;
         }
         return 200;
