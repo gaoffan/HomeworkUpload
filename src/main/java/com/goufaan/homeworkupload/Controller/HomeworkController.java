@@ -97,7 +97,7 @@ public class HomeworkController {
 
     @RequestMapping("/api/auth/newhomework")
     public ResponseModel NewHomework(String name, @RequestParam(value = "stype") String[] stype, String fnExample, Integer sLimit, String fnFormat ,
-                                     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date deadline, HttpServletRequest request) {
+                                     @DateTimeFormat(pattern = "yyyy-MM-dd") Date deadline, HttpServletRequest request) {
         if (name == null || stype == null || fnExample == null || sLimit == null || fnFormat == null || deadline == null)
             return new ResponseModel(1000);
         var user = auth.GetLoginAs(request);

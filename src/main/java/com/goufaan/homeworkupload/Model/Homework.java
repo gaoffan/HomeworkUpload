@@ -20,6 +20,7 @@ public class Homework implements Serializable {
     String FileNameExample;
 
     String FileNameFormat;
+
     @NotEmpty
     int SubmissionLimit;
 

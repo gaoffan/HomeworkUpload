@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 @RestController
 public class SubmitController {
@@ -72,6 +73,9 @@ public class SubmitController {
 
         if (file.getSize() > 10 * 1024 * 1024)
             return new ResponseModel(3003);
+
+        if (StringUtils.hasText(h.getFileNameFormat()) && !Pattern.matches(h.getFileNameFormat(), user))
+            return new ResponseModel(3006);
 
         var lastSub = sub.GetLastSubmission(hid, user);
         if (lastSub != null && !lastSub.getPassword().equals(password))
