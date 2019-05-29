@@ -47,13 +47,13 @@ public class AuthRepository implements IAuthRepository {
     }
 
     @Override
-    public String Login(String userName, String password) {
+    public Admin Login(String userName, String password) {
         var q = new Query(Criteria.where("UserName").is(userName));
         var result = mongo.findOne(q, Admin.class);
         var pwd = password + salt;
         if (result == null || !result.getPassword().equals(DigestUtils.md5DigestAsHex(pwd.getBytes())))
             return null;
-        return result.getOPENID();
+        return result;
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.goufaan.homeworkupload.Model.Admin;
 import com.goufaan.homeworkupload.Model.ResponseModel;
 import com.goufaan.homeworkupload.Repository.IAuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,17 +24,19 @@ public class AdminController {
 
     @RequestMapping("/api/signin")
     public ResponseModel SignIn(String userName, String password, HttpServletRequest request){
-        if (userName == null || password == null)
-            return new ResponseModel(1000);
+        if (!StringUtils.hasText(userName) || !StringUtils.hasText(password))
+            return new ResponseModel(1002);
 
         var result = auth.Login(userName, password);
         if (result == null)
             return new ResponseModel(2000);
 
         var s = request.getSession();
-        s.setAttribute("OPENID", result);
+        s.setAttribute("OPENID", result.getOPENID());
         s.setMaxInactiveInterval(30 * 60);
-        return new ResponseModel("登录成功");
+        var r = new ResponseModel("登录成功");
+        r.setData(result.getUserName());
+        return r;
     }
 
     @RequestMapping("/api/signout")

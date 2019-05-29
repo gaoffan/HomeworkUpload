@@ -28,6 +28,15 @@ public class Homework implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     Date Deadline;
 
+    boolean IsDeleted;
+
+    public boolean getDeleted (){
+        return IsDeleted;
+    }
+    public void setDeleted(boolean b){
+        IsDeleted = b;
+    }
+
     public int getId(){
         return id;
     }

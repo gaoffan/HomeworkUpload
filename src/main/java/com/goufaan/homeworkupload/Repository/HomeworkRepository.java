@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -22,6 +23,7 @@ public class HomeworkRepository implements IHomeworkRepository {
         var d = Calendar.getInstance();
         d.set(d.get(Calendar.YEAR), d.get(Calendar.MONTH), d.get(Calendar.DAY_OF_MONTH) - 7);
         var q = new Query(Criteria.where("Deadline").gte(d.getTime()));
+        q.addCriteria(Criteria.where("IsDeleted").is(false));
         q.with(new Sort(Sort.Direction.DESC, "id"));
         return mongo.find(q, Homework.class);
     }
@@ -29,6 +31,7 @@ public class HomeworkRepository implements IHomeworkRepository {
     @Override
     public List<Homework> GetMyAllHomework(int uid) {
         var q = new Query(Criteria.where("Owner").is(uid));
+        q.addCriteria(Criteria.where("IsDeleted").is(false));
         q.with(new Sort(Sort.Direction.DESC, "id"));
         return mongo.find(q , Homework.class);
     }
@@ -36,6 +39,7 @@ public class HomeworkRepository implements IHomeworkRepository {
     @Override
     public Homework GetHomework(int id) {
         var q = new Query(Criteria.where("id").is(id));
+        q.addCriteria(Criteria.where("IsDeleted").is(false));
         return mongo.findOne(q , Homework.class);
     }
 
@@ -43,6 +47,7 @@ public class HomeworkRepository implements IHomeworkRepository {
     public int AddHomework(Homework h) {
         try {
             h.setId(mongo.findAll(Homework.class).size() + 1);
+            h.setDeleted(false);
             mongo.insert(h);
         }
         catch(Exception e){
@@ -68,7 +73,8 @@ public class HomeworkRepository implements IHomeworkRepository {
     public int RemoveHomework(int id) {
         try {
             var q = new Query(Criteria.where("id").is(id));
-            mongo.remove(q, Homework.class);
+            var u = new Update().set("IsDeleted",true);
+            mongo.updateFirst(q,u, Homework.class);
         }
         catch(Exception e){
             e.printStackTrace();

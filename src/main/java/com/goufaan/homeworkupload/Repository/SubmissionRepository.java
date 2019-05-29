@@ -39,11 +39,24 @@ public class SubmissionRepository implements ISubmissionRepository {
     }
 
     @Override
-    public int UpdateSubmission(String user, int hid, String ipAddress) {
+    public int UpdateSubmission(int hid, String user, String ipAddress) {
         var q = new Query(Criteria.where("User").is(user));
         q.addCriteria(Criteria.where("HomeworkId").is(hid));
         Update update= new Update().set("CreateDate", new Date()).set("IPAddress", ipAddress);
         mongo.updateFirst(q, update, Submission.class);
+        return 200;
+    }
+
+    @Override
+    public int RemoveSubmission(int hid, String user) {
+        try {
+            var q = new Query(Criteria.where("User").is(user));
+            q.addCriteria(Criteria.where("HomeworkId").is(hid));
+            mongo.remove(q, Submission.class);
+        }catch (Exception e){
+            e.printStackTrace();
+            return 500;
+        }
         return 200;
     }
 

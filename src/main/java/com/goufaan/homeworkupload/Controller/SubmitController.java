@@ -19,14 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @RestController
 public class SubmitController {
@@ -53,8 +50,11 @@ public class SubmitController {
 
     @RequestMapping("/api/submit")
     public ResponseModel SubmitFile(Integer hid, String user, String password, @RequestParam("file") MultipartFile file, HttpServletRequest request){
-        if (hid == null || user == null || password == null || file == null || file.isEmpty())
+        if (hid == null || file == null || file.isEmpty())
             return new ResponseModel(1000);
+
+        if (!StringUtils.hasText(user) || !StringUtils.hasText(password))
+            return new ResponseModel(1002);
 
         var h = homew.GetHomework(hid);
         if (h == null)
@@ -102,14 +102,23 @@ public class SubmitController {
             return new ResponseModel(sub.AddSubmission(s), "提交成功！");
         }
         else{
-            return new ResponseModel(sub.UpdateSubmission(user, hid, request.getRemoteAddr()), "重新提交成功！");
+            return new ResponseModel(sub.UpdateSubmission(hid, user, request.getRemoteAddr()), "重新提交成功！");
         }
+    }
+
+    @RequestMapping("/api/auth/removesubmission")
+    public ResponseModel RemoveSubmission(Integer hid, String user){
+        if (hid == null || user == null)
+            return new ResponseModel(1000);
+        return new ResponseModel(sub.RemoveSubmission(hid,user));
     }
 
     @RequestMapping("/api/candownloadsubmission")
     public ResponseModel CanDownloadSubmission(Integer hid, String user, String password) {
-        if (hid == null || user == null || password == null)
+        if (hid == null)
             return new ResponseModel(1000);
+        if (!StringUtils.hasText(user) || !StringUtils.hasText(password))
+            return new ResponseModel(4003);
         var lastSub = sub.GetLastSubmission(hid, user);
         if (lastSub == null)
             return new ResponseModel(4001);

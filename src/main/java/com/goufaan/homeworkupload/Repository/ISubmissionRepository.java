@@ -10,7 +10,9 @@ public interface ISubmissionRepository {
 
     int AddSubmission(Submission s);
 
-    int UpdateSubmission(String user, int hid, String ipAddress);
+    int UpdateSubmission(int hid, String user, String ipAddress);
+
+    int RemoveSubmission(int hid, String user);
 
     Submission GetLastSubmission(int hid, String user);
 
