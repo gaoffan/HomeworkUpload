@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 
@@ -52,6 +54,8 @@ public class SubmissionRepository implements ISubmissionRepository {
         try {
             var q = new Query(Criteria.where("User").is(user));
             q.addCriteria(Criteria.where("HomeworkId").is(hid));
+            var result = mongo.findOne(q, Submission.class);
+            Files.deleteIfExists(Paths.get(result.getFilePath()));
             mongo.remove(q, Submission.class);
         }catch (Exception e){
             e.printStackTrace();
