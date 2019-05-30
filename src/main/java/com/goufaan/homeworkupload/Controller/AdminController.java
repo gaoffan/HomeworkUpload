@@ -1,6 +1,5 @@
 package com.goufaan.homeworkupload.Controller;
 
-import com.goufaan.homeworkupload.Model.Admin;
 import com.goufaan.homeworkupload.Model.ResponseModel;
 import com.goufaan.homeworkupload.Repository.IAuthRepository;
 import org.springframework.beans.factory.annotation.Autowired;

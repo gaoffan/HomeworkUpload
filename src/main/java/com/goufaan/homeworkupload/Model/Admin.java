@@ -8,6 +8,7 @@ import org.springframework.util.DigestUtils;
 import java.util.Date;
 
 public class Admin {
+
     @Value("${homeworkupload.auth.salt}")
     private String salt;
 

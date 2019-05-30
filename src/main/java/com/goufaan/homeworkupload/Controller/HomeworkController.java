@@ -1,5 +1,6 @@
 package com.goufaan.homeworkupload.Controller;
 
+import com.goufaan.homeworkupload.DateUtils;
 import com.goufaan.homeworkupload.Misc;
 import com.goufaan.homeworkupload.Model.Homework;
 import com.goufaan.homeworkupload.Model.ResponseModel;
@@ -36,9 +37,7 @@ public class HomeworkController {
             hm.put("id", item.getId());
             hm.put("name", item.getName());
             hm.put("owner", auth.GetUser(item.getOwner()).getUserName());
-            var c = Calendar.getInstance();
-            c.setTime(item.getDeadline());
-            hm.put("deadline_format", Misc.getTimeFormat(c));
+            hm.put("deadline_format", DateUtils.FormatDate(item.getDeadline()));
             dat.add(hm);
         }
         r.setData(dat);
@@ -72,9 +71,7 @@ public class HomeworkController {
         map.put("name",result.getName());
         map.put("createDate",result.getCreateDate());
         map.put("deadline",result.getDeadline());
-        var c = Calendar.getInstance();
-        c.setTime(result.getDeadline());
-        map.put("deadline_format", Misc.getTimeFormat(c));
+        map.put("deadline_format", DateUtils.FormatDate(result.getDeadline()));
         map.put("sLimit",result.getSubmissionLimit());
         map.put("owner",auth.GetUser(result.getOwner()).getUserName());
         map.put("format",result.getSupportType());

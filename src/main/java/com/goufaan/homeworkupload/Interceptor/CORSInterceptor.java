@@ -1,5 +1,6 @@
 package com.goufaan.homeworkupload.Interceptor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -7,10 +8,11 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.goufaan.homeworkupload.HomeworkUploadApplication.FrontUrl;
-
 @Component
 public class CORSInterceptor implements HandlerInterceptor {
+
+    @Value("${homeworkupload.fronturl}")
+    private String FrontUrl;
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
