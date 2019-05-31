@@ -32,7 +32,7 @@ public class HomeworkController {
             var hm = new HashMap<String,Object>();
             hm.put("id", item.getId());
             hm.put("name", item.getName());
-            hm.put("owner", auth.GetUser(item.getOwner()).getUserName());
+            hm.put("owner", auth.GetUser(item.getOwner()).getRealName());
             hm.put("deadline_format", DateUtils.FormatDate(item.getDeadline()));
             dat.add(hm);
         }
