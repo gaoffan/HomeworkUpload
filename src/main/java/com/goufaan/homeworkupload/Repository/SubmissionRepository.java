@@ -1,6 +1,8 @@
 package com.goufaan.homeworkupload.Repository;
 
+import com.goufaan.homeworkupload.ConfigUtils;
 import com.goufaan.homeworkupload.Model.Submission;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -17,8 +19,8 @@ import java.util.List;
 @Component
 public class SubmissionRepository implements ISubmissionRepository {
 
-    @Value("${homeworkupload.auth.salt}")
-    private String salt;
+    @Autowired
+    ConfigUtils config;
     //@Autowired
     private MongoTemplate mongo;
 
@@ -28,13 +30,13 @@ public class SubmissionRepository implements ISubmissionRepository {
 
     @Override
     public boolean IsMySubmission(Submission s, String password) {
-        var pwd = password + salt;
+        var pwd = password + config.getSalt();
         return s.getPassword().equals(DigestUtils.md5DigestAsHex(pwd.getBytes()));
     }
 
     @Override
     public int AddSubmission(Submission s) {
-        var pwd = s.getPassword() + salt;
+        var pwd = s.getPassword() + config.getSalt();
         s.setPassword(DigestUtils.md5DigestAsHex(pwd.getBytes()));
         mongo.insert(s);
         return 200;

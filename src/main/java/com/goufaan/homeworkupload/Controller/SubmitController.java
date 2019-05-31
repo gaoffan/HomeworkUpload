@@ -1,5 +1,6 @@
 package com.goufaan.homeworkupload.Controller;
 
+import com.goufaan.homeworkupload.ConfigUtils;
 import com.goufaan.homeworkupload.Misc;
 import com.goufaan.homeworkupload.Model.ResponseModel;
 import com.goufaan.homeworkupload.Model.Submission;
@@ -13,9 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +28,8 @@ import java.util.regex.Pattern;
 @RestController
 public class SubmitController {
 
-    public static final String PATH = "./uploads/";
+    @Autowired
+    ConfigUtils config;
     @Autowired
     ISubmissionRepository sub;
 
@@ -39,7 +39,7 @@ public class SubmitController {
     @Autowired
     IAuthRepository auth;
 
-    @RequestMapping("/api/getsubmitted")
+    @GetMapping("/api/getsubmitted")
     public ResponseModel GetIsSubmitted(Integer hid, String user){
         if (hid == null || user == null)
             return new ResponseModel(1000);
@@ -49,7 +49,7 @@ public class SubmitController {
         return r;
     }
 
-    @RequestMapping("/api/submit")
+    @PostMapping("/api/submit")
     public ResponseModel SubmitFile(Integer hid, String user, String password, @RequestParam("file") MultipartFile file, HttpServletRequest request){
         if (hid == null || file == null || file.isEmpty())
             return new ResponseModel(1000);
@@ -86,7 +86,7 @@ public class SubmitController {
 
         Path path;
         try{
-            path = Files.createDirectories(Paths.get(PATH + h.getId()+ "/").toAbsolutePath().normalize())
+            path = Files.createDirectories(Paths.get(config.getUploadpath() + h.getId()+ "/").toAbsolutePath().normalize())
                     .resolve(user + "." + ext);
             file.transferTo(path);
 
@@ -117,7 +117,7 @@ public class SubmitController {
         return new ResponseModel(sub.RemoveSubmission(hid,user));
     }
 
-    @RequestMapping("/api/candownloadsubmission")
+    @GetMapping("/api/candownloadsubmission")
     public ResponseModel CanDownloadSubmission(Integer hid, String user, String password) {
         if (hid == null)
             return new ResponseModel(1000);
@@ -158,6 +158,16 @@ public class SubmitController {
         return DownloadFile(source, request);
     }
 
+    @RequestMapping("/api/auth/downloadusersubmission")
+    public ResponseEntity<Resource> DownloadUserSubmission(Integer hid, String user, HttpServletRequest request) {
+        var admin = auth.GetLoginAs(request);
+        if (!homew.IsMyHomework(hid,admin.getUid()))
+            return null;
+        var lastSub = sub.GetLastSubmission(hid, user);
+        var source = Paths.get(lastSub.getFilePath());
+        return DownloadFile(source, request);
+    }
+
     @RequestMapping("/api/auth/downloadall")
     public ResponseEntity<Resource> DownloadAllSubmission(Integer hid, HttpServletRequest request){
         if (hid == null)
@@ -167,14 +177,14 @@ public class SubmitController {
         if (sub.GetAllSubmission(hid).size() == 0)
             return null;
 
-        var sourcePath = Paths.get("./uploads/" + hid + "/").toAbsolutePath().normalize();
-        var zipFile = Paths.get("./tmp/" + hid + ".zip").toAbsolutePath().normalize();
+        var sourcePath = Paths.get(config.getUploadpath() + hid + "/").toAbsolutePath().normalize();
+        var zipFile = Paths.get(config.getTmpPath() + hid + ".zip").toAbsolutePath().normalize();
 
         try {
-            Files.createDirectories(Paths.get("./tmp/").toAbsolutePath().normalize());
+            Files.createDirectories(Paths.get(config.getTmpPath()).toAbsolutePath().normalize());
             Misc.ZipMultiFile(sourcePath.toString(), zipFile.toString());
 
-            return DownloadFile(Paths.get("./tmp/" + hid + ".zip").toAbsolutePath().normalize(), request);
+            return DownloadFile(Paths.get(config.getTmpPath() + hid + ".zip").toAbsolutePath().normalize(), request);
 
         } catch (Exception e) {
             e.printStackTrace();

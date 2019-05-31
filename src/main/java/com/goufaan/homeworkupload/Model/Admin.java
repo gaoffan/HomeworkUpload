@@ -1,7 +1,6 @@
 package com.goufaan.homeworkupload.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.DigestUtils;
 
@@ -9,11 +8,9 @@ import java.util.Date;
 
 public class Admin {
 
-    @Value("${homeworkupload.auth.salt}")
-    private String salt;
-
     int uid;
     String UserName;
+    String RealName;
     String Password;
     String Email;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -34,13 +31,17 @@ public class Admin {
         UserName = n;
         UpdateOPENID();
     }
-
+    public String getRealName(){
+        return RealName;
+    }
+    public void setRealName(String n){
+        RealName = n;
+    }
     @JsonIgnore
     public String getPassword(){
         return Password;
     }
     public void setPassword(String n){
-        n = n + salt;
         Password = DigestUtils.md5DigestAsHex(n.getBytes());
         UpdateOPENID();
     }

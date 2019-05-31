@@ -1,7 +1,6 @@
 package com.goufaan.homeworkupload.Controller;
 
 import com.goufaan.homeworkupload.DateUtils;
-import com.goufaan.homeworkupload.Misc;
 import com.goufaan.homeworkupload.Model.Homework;
 import com.goufaan.homeworkupload.Model.ResponseModel;
 import com.goufaan.homeworkupload.Repository.IAuthRepository;
@@ -9,10 +8,7 @@ import com.goufaan.homeworkupload.Repository.IHomeworkRepository;
 import com.goufaan.homeworkupload.Repository.ISubmissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -27,7 +23,7 @@ public class HomeworkController {
     @Autowired
     ISubmissionRepository sub;
 
-    @RequestMapping("/api/getlist")
+    @GetMapping("/api/getlist")
     public ResponseModel GetHomeworkList() {
         var r = new ResponseModel(200);
         var result = homew.GetAllHomework();
@@ -43,7 +39,7 @@ public class HomeworkController {
         r.setData(dat);
         return r;
     }
-    @RequestMapping("/api/auth/getlist")
+    @GetMapping("/api/auth/getlist")
     public ResponseModel GetMyHomeworkList(HttpServletRequest request) {
         var r = new ResponseModel(200);
         var result = homew.GetMyAllHomework(auth.GetLoginAs(request).getUid());
@@ -59,7 +55,7 @@ public class HomeworkController {
         return r;
     }
 
-    @RequestMapping("/api/get/{id}")
+    @GetMapping("/api/get/{id}")
     public ResponseModel GetHomework(@PathVariable Integer id, HttpServletRequest request) {
         if (id == null)
             return new ResponseModel(1000);
@@ -73,7 +69,7 @@ public class HomeworkController {
         map.put("deadline",result.getDeadline());
         map.put("deadline_format", DateUtils.FormatDate(result.getDeadline()));
         map.put("sLimit",result.getSubmissionLimit());
-        map.put("owner",auth.GetUser(result.getOwner()).getUserName());
+        map.put("owner",auth.GetUser(result.getOwner()).getRealName());
         map.put("format",result.getSupportType());
         var subs = sub.GetAllSubmission(id);
         map.put("count", subs.size());
@@ -92,7 +88,7 @@ public class HomeworkController {
         return r;
     }
 
-    @RequestMapping("/api/auth/newhomework")
+    @PostMapping("/api/auth/newhomework")
     public ResponseModel NewHomework(String name, @RequestParam(value = "stype") String[] stype, String fnExample, Integer sLimit, String fnFormat ,
                                      @DateTimeFormat(pattern = "yyyy-MM-dd") Date deadline, HttpServletRequest request) {
         if (name == null || stype == null || fnExample == null || sLimit == null || fnFormat == null || deadline == null)
@@ -115,7 +111,7 @@ public class HomeworkController {
         return result;
     }
 
-    @RequestMapping("/api/auth/ismyhomework")
+    @GetMapping("/api/auth/ismyhomework")
     public ResponseModel IsMyHomework(Integer hid, HttpServletRequest request) {
         if (hid == null)
             return new ResponseModel(1000);

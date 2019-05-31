@@ -12,9 +12,11 @@ public interface IAuthRepository {
 
     Admin GetUser(int uid);
 
+    boolean HasUser(String username);
+
     Admin GetUser(String OPENID);
 
     Admin Login(String userName, String password);
 
-    int Register(String userName, String password, String email);
+    int Register(String userName, String realName, String password, String email);
 }
