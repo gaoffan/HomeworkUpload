@@ -1,5 +1,6 @@
 package com.goufaan.homeworkupload;
 
+import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +12,7 @@ public class HomeworkUploadApplicationTests {
 
     @Test
     public void contextLoads() {
+
     }
 
 }
